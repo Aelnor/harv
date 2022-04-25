@@ -22,7 +22,13 @@ enum Event<I> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut app = App::new("/home/eiden/Documents/test.har");
+    let args: Vec<_> = std::env::args().collect();
+    if args.len() != 2 {
+        println!("Expected exactly one command line argument: the file name");
+        return Ok(());
+    }
+
+    let mut app = App::new(args[1].as_str());
     enable_raw_mode().expect("can use raw mode");
     let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
@@ -62,8 +68,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     terminal.show_cursor()?;
                     break;
                 }
-                KeyCode::Char('j') | KeyCode::Down => app.next_entry(),
-                KeyCode::Char('k') | KeyCode::Up => app.previous_entry(),
+                KeyCode::Char('j') | KeyCode::Down => app.down(),
+                KeyCode::Char('k') | KeyCode::Up => app.up(),
+                KeyCode::Char('h') => app.toggle_headers(),
+                KeyCode::Tab => app.next_window(),
                 _ => {}
             },
             Event::Tick => {}

@@ -22,7 +22,7 @@ impl<T> StatefulList<T> {
         let i = match self.state.selected() {
             Some(i) => {
                 if i >= self.list.len() - 1 {
-                    0
+                    self.list.len() - 1
                 } else {
                     i + 1
                 }
